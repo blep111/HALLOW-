@@ -4,9 +4,8 @@ import re
 import random
 import os
 
-app = Flask(__name__, static_folder="static", template_folder="templates")
+app = Flask(__name__)
 
-# Example user-agents (for variation)
 ua_list = [
     "Mozilla/5.0 (Linux; Android 10; Wildfire E Lite) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/105.0.5195.136 Mobile Safari/537.36",
     "Mozilla/5.0 (Linux; Android 11; KINGKONG 5 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.141 Mobile Safari/537.36",
@@ -14,43 +13,39 @@ ua_list = [
 ]
 
 def extract_token(cookie, ua):
-    """Extract a Facebook access token from the given cookie."""
     try:
         cookies = {i.split('=')[0]: i.split('=')[1] for i in cookie.split('; ') if '=' in i}
         res = requests.get("https://business.facebook.com/business_locations", headers={
             "user-agent": ua,
             "referer": "https://www.facebook.com/"
         }, cookies=cookies)
-
         token_match = re.search(r'(EAAG\w+)', res.text)
         return token_match.group(1) if token_match else None
-    except Exception as e:
-        print("Token extraction error:", e)
+    except:
         return None
 
 @app.route("/")
 def index():
-    """Render the spooky Halloween UI."""
     return render_template("index.html")
 
 @app.route("/api/share", methods=["POST"])
 def share():
-    """Simulate post sharing on Facebook."""
     data = request.get_json()
     cookie = data.get("cookie")
     post_link = data.get("link")
     limit = int(data.get("limit", 0))
 
     if not cookie or not post_link or not limit:
-        return jsonify({"status": False, "message": "Missing input data."})
+        return jsonify({"status": False, "message": "⚠️ Missing required input."})
 
     ua = random.choice(ua_list)
     token = extract_token(cookie, ua)
     if not token:
-        return jsonify({"status": False, "message": "Token extraction failed."})
+        return jsonify({"status": False, "message": "❌ Failed to extract token. Invalid cookie."})
 
     cookies = {i.split('=')[0]: i.split('=')[1] for i in cookie.split('; ') if '=' in i}
     success = 0
+
     for _ in range(limit):
         res = requests.post(
             "https://graph.facebook.com/v18.0/me/feed",
@@ -66,7 +61,7 @@ def share():
     return jsonify({
         "status": True,
         "message": f"✅ Successfully shared {success} times!",
-        "success_count": success
+        "count": success
     })
 
 if __name__ == "__main__":
