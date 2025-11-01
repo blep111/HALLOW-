@@ -15,13 +15,18 @@ ua_list = [
 def extract_token(cookie, ua):
     try:
         cookies = {i.split('=')[0]: i.split('=')[1] for i in cookie.split('; ') if '=' in i}
-        res = requests.get("https://business.facebook.com/business_locations", headers={
-            "user-agent": ua,
-            "referer": "https://www.facebook.com/"
-        }, cookies=cookies)
-        token_match = re.search(r'(EAAG\w+)', res.text)
+        res = requests.get(
+            "https://m.facebook.com/composer/ocelot/async_loader/?publisher=feed",
+            headers={
+                "user-agent": ua,
+                "referer": "https://m.facebook.com/",
+            },
+            cookies=cookies
+        )
+        token_match = re.search(r'{"accessToken":"(EAA\w+)"', res.text)
         return token_match.group(1) if token_match else None
-    except:
+    except Exception as e:
+        print("Token extraction error:", e)
         return None
 
 @app.route("/")
