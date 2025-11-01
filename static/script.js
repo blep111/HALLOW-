@@ -1,15 +1,15 @@
 async function startShare() {
-  const cookie = document.getElementById('cookie').value.trim();
-  const link = document.getElementById('link').value.trim();
-  const limit = document.getElementById('limit').value.trim();
-  const responseDiv = document.getElementById('response');
+  const cookie = document.getElementById("cookie").value.trim();
+  const link = document.getElementById("link").value.trim();
+  const limit = document.getElementById("limit").value.trim();
+  const responseArea = document.getElementById("response");
+
+  responseArea.innerHTML = "🕷️ Processing your request... Please wait.";
 
   if (!cookie || !link || !limit) {
-    responseDiv.innerHTML = "⚠️ Missing input — please complete all fields!";
+    responseArea.innerHTML = "⚠️ Please fill out all fields.";
     return;
   }
-
-  responseDiv.innerHTML = "💻 Processing spell... connecting to spirits...";
 
   try {
     const res = await fetch("/api/share", {
@@ -19,13 +19,13 @@ async function startShare() {
     });
 
     const data = await res.json();
-
     if (data.status) {
-      responseDiv.innerHTML = `🟢 ${data.message}`;
+      responseArea.innerHTML = `<span style="color:lime;">${data.message}</span>`;
     } else {
-      responseDiv.innerHTML = `🔴 ${data.message}`;
+      responseArea.innerHTML = `<span style="color:red;">${data.message}</span>`;
     }
   } catch (err) {
-    responseDiv.innerHTML = "💀 Connection lost... spirits interrupted the process!";
+    responseArea.innerHTML = "👻 Something went wrong. Please try again later.";
+    console.error(err);
   }
 }
