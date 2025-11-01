@@ -4,19 +4,28 @@ async function startShare() {
   const limit = document.getElementById('limit').value.trim();
   const responseDiv = document.getElementById('response');
 
-  responseDiv.innerHTML = "👻 Summoning spirits... please wait!";
+  if (!cookie || !link || !limit) {
+    responseDiv.innerHTML = "⚠️ Missing input — please complete all fields!";
+    return;
+  }
 
-  const res = await fetch("/api/share", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ cookie, link, limit })
-  });
+  responseDiv.innerHTML = "💻 Processing spell... connecting to spirits...";
 
-  const data = await res.json();
+  try {
+    const res = await fetch("/api/share", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cookie, link, limit })
+    });
 
-  if (data.status) {
-    responseDiv.innerHTML = `🎉 ${data.message}`;
-  } else {
-    responseDiv.innerHTML = `☠️ Error: ${data.message}`;
+    const data = await res.json();
+
+    if (data.status) {
+      responseDiv.innerHTML = `🟢 ${data.message}`;
+    } else {
+      responseDiv.innerHTML = `🔴 ${data.message}`;
+    }
+  } catch (err) {
+    responseDiv.innerHTML = "💀 Connection lost... spirits interrupted the process!";
   }
 }
