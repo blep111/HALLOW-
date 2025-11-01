@@ -2,42 +2,47 @@ from flask import Flask, request, jsonify, render_template
 import requests
 import re
 import random
-from datetime import datetime
 import os
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 
+# Example user-agents (for variation)
 ua_list = [
-    "Mozilla/5.0 (Linux; Android 10; Wildfire E Lite) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/105.0.5195.136 Mobile Safari/537.36[FBAN/EMA;FBLC/en_US;FBAV/298.0.0.10.115;]",
-    "Mozilla/5.0 (Linux; Android 11; KINGKONG 5 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.141 Mobile Safari/537.36[FBAN/EMA;FBLC/fr_FR;FBAV/320.0.0.12.108;]",
-    "Mozilla/5.0 (Linux; Android 11; G91 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/106.0.5249.126 Mobile Safari/537.36[FBAN/EMA;FBLC/fr_FR;FBAV/325.0.1.4.108;]"
+    "Mozilla/5.0 (Linux; Android 10; Wildfire E Lite) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/105.0.5195.136 Mobile Safari/537.36",
+    "Mozilla/5.0 (Linux; Android 11; KINGKONG 5 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.141 Mobile Safari/537.36",
+    "Mozilla/5.0 (Linux; Android 11; G91 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/106.0.5249.126 Mobile Safari/537.36"
 ]
 
 def extract_token(cookie, ua):
+    """Extract a Facebook access token from the given cookie."""
     try:
         cookies = {i.split('=')[0]: i.split('=')[1] for i in cookie.split('; ') if '=' in i}
         res = requests.get("https://business.facebook.com/business_locations", headers={
             "user-agent": ua,
             "referer": "https://www.facebook.com/"
         }, cookies=cookies)
+
         token_match = re.search(r'(EAAG\w+)', res.text)
         return token_match.group(1) if token_match else None
-    except:
+    except Exception as e:
+        print("Token extraction error:", e)
         return None
 
 @app.route("/")
 def index():
+    """Render the spooky Halloween UI."""
     return render_template("index.html")
 
 @app.route("/api/share", methods=["POST"])
 def share():
+    """Simulate post sharing on Facebook."""
     data = request.get_json()
     cookie = data.get("cookie")
     post_link = data.get("link")
     limit = int(data.get("limit", 0))
 
     if not cookie or not post_link or not limit:
-        return jsonify({"status": False, "message": "Missing input."})
+        return jsonify({"status": False, "message": "Missing input data."})
 
     ua = random.choice(ua_list)
     token = extract_token(cookie, ua)
@@ -60,7 +65,7 @@ def share():
 
     return jsonify({
         "status": True,
-        "message": f"✅ Shared {success} times.",
+        "message": f"✅ Successfully shared {success} times!",
         "success_count": success
     })
 
