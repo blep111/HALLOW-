@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FB SHARE BOOSTER</title>
+  <title>🎃 FB SHARE BOOSTER 🎃</title>
   <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Creepster&display=swap');
 
@@ -76,13 +76,8 @@ body {
   animation-delay: 4.5s;
 }
 
-@keyframes typing {
-  to { width: 100%; }
-}
-
-@keyframes blink {
-  50% { border-color: transparent; }
-}
+@keyframes typing { to { width: 100%; } }
+@keyframes blink { 50% { border-color: transparent; } }
 
 .input-section {
   margin-top: 30px;
@@ -134,7 +129,7 @@ footer {
 <body>
   <div class="header">
     <img src="https://i.imgur.com/yruP9Yu.gif" alt="spooky bg" class="bg-top">
-    <h1></h1>
+    <h1>🎃 FB SHARE BOOSTER 🎃</h1>
   </div>
 
   <div class="terminal">
@@ -155,40 +150,40 @@ footer {
     </div>
   </div>
 
-  <footer></footer>
+  <footer>👻 Powered by Flask | Halloween Edition</footer>
 
   <script>
    async function startShare() {
-  const cookie = document.getElementById("cookie").value.trim();
-  const link = document.getElementById("link").value.trim();
-  const limit = document.getElementById("limit").value.trim();
-  const responseArea = document.getElementById("response");
+      const cookie = document.getElementById("cookie").value.trim();
+      const link = document.getElementById("link").value.trim();
+      const limit = document.getElementById("limit").value.trim();
+      const responseArea = document.getElementById("response");
 
-  responseArea.innerHTML = "🕷️ Processing your request... Please wait.";
+      responseArea.innerHTML = "🕷️ Processing your request... Please wait.";
 
-  if (!cookie || !link || !limit) {
-    responseArea.innerHTML = "⚠️ Please fill out all fields.";
-    return;
-  }
+      if (!cookie || !link || !limit) {
+        responseArea.innerHTML = "⚠️ Please fill out all fields.";
+        return;
+      }
 
-  try {
-    const res = await fetch("/api/share", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cookie, link, limit })
-    });
+      try {
+        const res = await fetch("/api/share", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cookie, link, limit })
+        });
 
-    const data = await res.json();
-    if (data.status) {
-      responseArea.innerHTML = `<span style="color:lime;">${data.message}</span>`;
-    } else {
-      responseArea.innerHTML = `<span style="color:red;">${data.message}</span>`;
+        const data = await res.json();
+        if (data.status) {
+          responseArea.innerHTML = `<span style="color:lime;">${data.message}</span>`;
+        } else {
+          responseArea.innerHTML = `<span style="color:red;">${data.message}</span>`;
+        }
+      } catch (err) {
+        responseArea.innerHTML = "👻 Something went wrong. Please try again later.";
+        console.error(err);
+      }
     }
-  } catch (err) {
-    responseArea.innerHTML = "👻 Something went wrong. Please try again later.";
-    console.error(err);
-  }
-}
-</script>
+  </script>
 </body>
-  </html>
+</html>
